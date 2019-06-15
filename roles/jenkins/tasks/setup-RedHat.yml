@@ -35,7 +35,15 @@
     name: "/tmp/jenkins-{{ jenkins_version }}-1.1.noarch.rpm"
     state: present
   when: jenkins_version is defined and specific_version.stat.exists
-  notify: configure default users
+
+- name: configure default users
+  template:
+    src: basic-security.groovy.j2
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    owner: "{{ jenkins_process_user }}"
+    group: "{{ jenkins_process_group }}"
+    mode: 0775
+  register: jenkins_users_config
 
 - name: Ensure Jenkins is installed.
   package:
